@@ -1,0 +1,7 @@
+# Logs
+*.log
+/tmp/
+
+# Runtime files
+*.pid
+nohup.out
