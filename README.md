@@ -17,7 +17,7 @@ Voce pode:
 
 ---
 
-## :gear: Como funciona? (explicacao simples)
+## :gear: Como funciona?
 
 ```
 Seu Celular (Termux)          Internet           Seu Computador
@@ -34,10 +34,10 @@ Seu Celular (Termux)          Internet           Seu Computador
 **Passo a passo:**
 
 1. :fire: O **ttyd** compartilha o terminal do celular via WebSocket
-2 :open_file_folder: O **filebrowser** mostra os arquivos numa interface bonita
-3 :shield: O **cloudflared** cria um tunel seguro entre o celular e a Cloudflare
-4 :star: A Cloudflare te da uma URL publica tipo `nome-cool.trycloudflare.com`
-5 :tada: Voce abre essa URL no navegador do computador e pronto!
+2. :open_file_folder: O **filebrowser** mostra os arquivos numa interface bonita
+3. :shield: O **cloudflared** cria um tunel seguro entre o celular e a Cloudflare
+4. :star: A Cloudflare te da uma URL publica tipo `nome-cool.trycloudflare.com`
+5. :tada: Voce abre essa URL no navegador do computador e pronto!
 
 ---
 
@@ -93,18 +93,16 @@ chmod +x $PREFIX/bin/filebrowser
 ### Passo 3: Baixar os arquivos do projeto
 
 ```bash
-# Criar a pasta do projeto
-mkdir -p ~/termux-remote
-cd ~/termux-remote
+# Clonar o repositorio
+cd ~
+git clone https://github.com/CaioHAlves/personal-remote-server.git termux-remote
+cd termux-remote
 ```
 
-Copie os arquivos `start.sh` e `README.md` para a pasta `~/termux-remote`.
-
-### Passo 4: Dar permissao e rodar
+### Passo 4: Iniciar
 
 ```bash
-chmod +x ~/termux-remote/start.sh
-bash ~/termux-remote/start.sh
+bash start.sh
 ```
 
 **Pronto!** O script vai mostrar as URLs publicas. Copie e cole no navegador do computador!
@@ -115,9 +113,12 @@ bash ~/termux-remote/start.sh
 
 | Comando | O que faz |
 |---------|-----------|
-| `bash ~/termux-remote/start.sh` | Inicia tudo e mostra as URLs |
+| `bash start.sh` | Inicia tudo e mostra as URLs |
+| `bash start.sh stop` | Para todos os servicos |
+| `bash start.sh restart` | Reinicia tudo |
+| `bash start.sh status` | Mostra servicos rodando |
 | `tunnel` | Mostra a URL atual do terminal |
-| `stopremote` | Para todos os servicos |
+| `tunnelfiles` | Mostra a URL do gerenciador de arquivos |
 
 ---
 
@@ -135,8 +136,20 @@ bash ~/termux-remote/start.sh
 
 ```
 termux-remote/
- start.sh        # Script principal que inicia tudo
- README.md       # Este arquivo que voce esta lendo
+├── start.sh              # Script principal - inicia tudo
+├── install.sh            # Script de instalacao automatica
+├── README.md             # Este arquivo
+├── .gitignore            # Arquivos ignorados pelo git
+│
+├── --- Arquivos auxiliares ---
+├── remote-server.js      # Servidor Node.js (proxy reverso)
+├── landing.js            # Pagina de inicio simples
+├── start-cloudflared.sh  # Script para iniciar cloudflared
+├── check-tunnel.sh       # Verifica status do tunnel
+├── dns-forwarder.js      # Encaminhador DNS
+├── tcp-tunnel.js         # Tunnel TCP (experimental)
+├── start-ngrok.sh        # Script para ngrok
+└── start-bore.sh         # Script para bore
 ```
 
 ---
@@ -148,7 +161,7 @@ termux-remote/
 Por padrao, o gerenciador de arquivos nao tem senha. Para adicionar:
 
 ```bash
-filebrowser -p 8080 -r ~ --username admin --password su senha
+filebrowser -p 8080 -r ~ --username admin --password su_senha_aqui
 ```
 
 ### :repeat: Manter rodando depois de fechar o Termux
@@ -164,7 +177,8 @@ O Termux pode fechar em background. Para evitar isso:
 Sim! A cada reinicio, a Cloudflare gera URLs novas. Para ver a URL atual:
 
 ```bash
-tunnel    # URL do terminal
+tunnel      # URL do terminal
+tunnelfiles # URL dos arquivos
 ```
 
 ---
@@ -173,10 +187,11 @@ tunnel    # URL do terminal
 
 | Problema | Solucao |
 |----------|---------|
-| " conexao recusada" | Verifique se o script esta rodando |
+| "conexao recusada" | Verifique se o script esta rodando com `bash start.sh status` |
 | Terminal nao digita | Recarregue a pagina (F5) |
 | URL nao abre | Verifique a conexao com a internet |
 | Script nao roda | Execute `pkg update -y` e tente de novo |
+| cloudflared nao inicia | Verifique se esta instalado: `cloudflared --version` |
 
 ---
 
@@ -186,6 +201,27 @@ tunnel    # URL do terminal
 - :warning: O terminal da acesso total ao celular. Nao compartilhe as URLs!
 - :lock: As conexoes sao criptografadas pela Cloudflare
 - :iphone: Rode isso apenas no seu celular pessoal
+
+---
+
+## :test_tube: O que foi testado e funcionou
+
+| Ferramenta | Funcionou? | Notas |
+|-----------|:----------:|-------|
+| ttyd | :white_check_mark: | Terminal web perfeito |
+| filebrowser | :white_check_mark: | Gerenciador de arquivos funcional |
+| cloudflared | :white_check_mark: | Tuneis gratuitos sem conta |
+| Node.js proxy | :x: | WebSocket com problemas via cloudflare |
+
+## :x: O que NAO funcionou
+
+| Ferramenta | Motivo |
+|-----------|--------|
+| ngrok | Versao gratuita nao suporta TCP |
+| bore | Servidor bore.pub inacessivel |
+| code-server | Nao funciona no Android (dependencias nativas) |
+| serveo.net | Nao suporta encaminhamento de portas |
+| localhost.run | Apenas HTTP, nao TCP |
 
 ---
 
@@ -200,6 +236,6 @@ tunnel    # URL do terminal
 
 Feito com :heart: por [CaioHAlves](https://github.com/CaioHAlves)
 
-## :page_facing_up: Licença
+## :page_facing_up: Licenca
 
 MIT - Faca o que quiser! :tada:

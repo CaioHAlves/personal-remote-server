@@ -5,3 +5,13 @@
 # Runtime files
 *.pid
 nohup.out
+
+# Binarios e archives (baixados durante instalacao)
+*.tar.gz
+*.tgz
+*.db
+
+# Arquivos de configuracao locais
+.bash_history
+.termux_authinfo
+.gitconfig
