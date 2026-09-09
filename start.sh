@@ -37,7 +37,7 @@ fi
 stop_services() {
     pkill -f "ttyd -p 7681" 2>/dev/null || true
     pkill -f "filebrowser -p 8080" 2>/dev/null || true
-    pkill -f "cloudflared tunnel" 2>/dev/null || true
+    pkill -f "ssh.*serveo.net" 2>/dev/null || true
     sleep 1
 }
 
@@ -45,7 +45,7 @@ stop_services() {
 check_deps() {
     local ok=true
     command -v ttyd &> /dev/null || { print_error "ttyd nao encontrado. Rode: pkg install ttyd"; ok=false; }
-    command -v cloudflared &> /dev/null || { print_error "cloudflared nao encontrado. Rode: bash install.sh"; ok=false; }
+    command -v ssh &> /dev/null || { print_error "ssh nao encontrado."; ok=false; }
     command -v filebrowser &> /dev/null || { print_warn "filebrowser nao encontrado. Gerenciador de arquivos desabilitado."; }
     $ok || exit 1
 }
@@ -67,25 +67,25 @@ start_filebrowser() {
     fi
 }
 
-# Iniciar tunnels
+# Iniciar tunnels (via SSH/serveo)
 start_tunnels() {
-    nohup cloudflared tunnel --url http://localhost:7681 > ~/tunnel-terminal.log 2>&1 &
+    nohup ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -R 80:localhost:7681 serveo.net > ~/tunnel-terminal.log 2>&1 &
     print_ok "tunnel do terminal criado"
 
     if [ "$HAS_FILES" = true ]; then
-        nohup cloudflared tunnel --url http://localhost:8080 > ~/tunnel-files.log 2>&1 &
+        nohup ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=60 -R 80:localhost:8080 serveo.net > ~/tunnel-files.log 2>&1 &
         print_ok "tunnel dos arquivos criado"
     fi
 }
 
 # Mostrar URLs
 show_urls() {
-    sleep 8
+    sleep 6
 
-    TERMINAL_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" ~/tunnel-terminal.log 2>/dev/null | tail -1)
+    TERMINAL_URL=$(grep -o 'https://[^ ]*\.serveousercontent\.com' ~/tunnel-terminal.log 2>/dev/null | tail -1)
     FILES_URL=""
     if [ "$HAS_FILES" = true ]; then
-        FILES_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" ~/tunnel-files.log 2>/dev/null | tail -1)
+        FILES_URL=$(grep -o 'https://[^ ]*\.serveousercontent\.com' ~/tunnel-files.log 2>/dev/null | tail -1)
     fi
 
     echo ""
@@ -96,13 +96,13 @@ show_urls() {
 
     if [ -n "$TERMINAL_URL" ]; then
         echo -e "  ${BOLD}TERMINAL:${NC}"
-        echo -e "  ${YELLOW}https://$TERMINAL_URL${NC}"
+        echo -e "  ${YELLOW}$TERMINAL_URL${NC}"
         echo ""
     fi
 
     if [ -n "$FILES_URL" ]; then
         echo -e "  ${BOLD}ARQUIVOS:${NC}"
-        echo -e "  ${YELLOW}https://$FILES_URL${NC}"
+        echo -e "  ${YELLOW}$FILES_URL${NC}"
         echo ""
     fi
 
@@ -120,7 +120,7 @@ stop_all() {
     echo -e "\n${YELLOW}Parando todos os servicos...${NC}"
     pkill -f "ttyd -p 7681" 2>/dev/null || true
     pkill -f "filebrowser -p 8080" 2>/dev/null || true
-    pkill -f "cloudflared tunnel" 2>/dev/null || true
+    pkill -f "ssh.*serveo.net" 2>/dev/null || true
     print_ok "Todos os servicos parados."
 }
 
@@ -141,19 +141,19 @@ show_status() {
         echo -e "  ${RED}[PARADO]${NC}  filebrowser"
     fi
 
-    if pgrep -f "cloudflared tunnel" > /dev/null 2>&1; then
-        echo -e "  ${GREEN}[RODANDO]${NC} cloudflared"
+    if pgrep -f "ssh.*serveo.net" > /dev/null 2>&1; then
+        echo -e "  ${GREEN}[RODANDO]${NC} tunnels (serveo)"
     else
-        echo -e "  ${RED}[PARADO]${NC}  cloudflared"
+        echo -e "  ${RED}[PARADO]${NC}  tunnels"
     fi
 
     echo ""
 
-    TERMINAL_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" ~/tunnel-terminal.log 2>/dev/null | tail -1)
-    FILES_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" ~/tunnel-files.log 2>/dev/null | tail -1)
+    TERMINAL_URL=$(grep -o 'https://[^ ]*\.serveousercontent\.com' ~/tunnel-terminal.log 2>/dev/null | tail -1)
+    FILES_URL=$(grep -o 'https://[^ ]*\.serveousercontent\.com' ~/tunnel-files.log 2>/dev/null | tail -1)
 
-    [ -n "$TERMINAL_URL" ] && echo -e "  Terminal:  ${YELLOW}https://$TERMINAL_URL${NC}"
-    [ -n "$FILES_URL" ] && echo -e "  Arquivos:  ${YELLOW}https://$FILES_URL${NC}"
+    [ -n "$TERMINAL_URL" ] && echo -e "  Terminal:  ${YELLOW}$TERMINAL_URL${NC}"
+    [ -n "$FILES_URL" ] && echo -e "  Arquivos:  ${YELLOW}$FILES_URL${NC}"
     echo ""
 }
 

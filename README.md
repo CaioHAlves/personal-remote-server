@@ -21,8 +21,8 @@ Voce pode:
 Seu Celular (Termux)          Internet           Seu Computador
 +-------------------+    +----------------+    +-------------------+
 |                   |    |                |    |                   |
-|  terminal (bash)  |--->|   Cloudflare   |--->|  Navegador Web    |
-|  arquivos         |    |   (tunel)      |    |  (Chrome, etc)    |
+|  terminal (bash)  |--->|    Serveo      |--->|  Navegador Web    |
+|  arquivos         |    |   (SSH tunel)  |    |  (Chrome, etc)    |
 |                   |    |                |    |                   |
 +-------------------+    +----------------+    +-------------------+
      porta 7681              URL publica          voce digita aqui!
@@ -43,10 +43,8 @@ Abra o Termux e cole:
 
 ```bash
 pkg update -y && pkg upgrade -y
-pkg install -y nodejs proot curl git
+pkg install -y nodejs proot curl git openssh
 pkg install -y ttyd
-curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o $PREFIX/bin/cloudflared
-chmod +x $PREFIX/bin/cloudflared
 curl -fsSL https://github.com/filebrowser/filebrowser/releases/latest/download/linux-arm64-filebrowser.tar.gz -o ~/fb.tar.gz
 tar -xzf ~/fb.tar.gz -C $PREFIX/bin/ filebrowser
 chmod +x $PREFIX/bin/filebrowser
@@ -73,10 +71,10 @@ Quando voce roda `bash start.sh`, o script mostra **duas URLs**:
   Abra essas URLs no navegador do seu computador:
 
   TERMINAL:
-  https://abc-xyz-123.trycloudflare.com
+  https://abc-xyz-123.serveousercontent.com
 
   ARQUIVOS:
-  https://def-uvw-456.trycloudflare.com
+  https://def-uvw-456.serveousercontent.com
 
   ═══════════════════════════════════════
 ```
@@ -156,7 +154,7 @@ filebrowser -p 8080 -r ~ --username admin --password su_senha_aqui
 
 ### :arrows_counterclockwise: URLs mudaram?
 
-Sim! A cada reinicio, a Cloudflare gera URLs novas. Para ver a URL atual:
+Sim! A cada reinicio, novas URLs sao geradas. Para ver a URL atual:
 
 ```bash
 tunnel      # URL do terminal
@@ -180,7 +178,7 @@ tunnelfiles # URL dos arquivos
 
 - :warning: O filebrowser **nao tem senha** por padrao. Adicione uma!
 - :warning: O terminal da acesso total ao celular. Nao compartilhe as URLs!
-- :lock: As conexoes sao criptografadas pela Cloudflare
+- :lock: As conexoes sao criptografadas pelo SSH
 
 ---
 
@@ -190,10 +188,10 @@ tunnelfiles # URL dos arquivos
 |-----------|:----------:|--------|
 | ttyd | :white_check_mark: | Terminal web perfeito |
 | filebrowser | :white_check_mark: | Gerenciador de arquivos funcional |
-| cloudflared | :white_check_mark: | Tuneis gratuitos sem conta |
+| serveo (SSH) | :white_check_mark: | Tuneis gratuitos via SSH |
+| cloudflared | :x: | Problemas de DNS no Termux |
 | ngrok | :x: | Versao gratuita nao suporta TCP |
 | bore | :x: | Servidor inacessivel |
-| code-server | :x: | Nao funciona no Android |
 
 ---
 
@@ -201,7 +199,7 @@ tunnelfiles # URL dos arquivos
 
 - [ttyd](https://github.com/nicm/ttyd) - Terminal compartilhado via web
 - [filebrowser](https://github.com/filebrowser/filebrowser) - Gerenciador de arquivos
-- [cloudflared](https://github.com/cloudflare/cloudflared) - Tuneis da Cloudflare
+- [serveo.net](https://serveo.net) - Tuneis SSH gratuitos
 - [Termux](https://termux.dev/) - O terminal para Android
 
 ---

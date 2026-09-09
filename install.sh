@@ -25,20 +25,16 @@ if [ ! -d "/data/data/com.termux" ]; then
     exit 1
 fi
 
-echo -e "${YELLOW}[1/5]${NC} Atualizando pacotes..."
+echo -e "${YELLOW}[1/4]${NC} Atualizando pacotes..."
 pkg update -y && pkg upgrade -y
 
-echo -e "${YELLOW}[2/5]${NC} Instalando dependencias..."
-pkg install -y nodejs proot curl git
+echo -e "${YELLOW}[2/4]${NC} Instalando dependencias..."
+pkg install -y nodejs proot curl git openssh
 
-echo -e "${YELLOW}[3/5]${NC} Instalando ttyd..."
+echo -e "${YELLOW}[3/4]${NC} Instalando ttyd..."
 pkg install -y ttyd
 
-echo -e "${YELLOW}[4/5]${NC} Instalando cloudflared..."
-curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o $PREFIX/bin/cloudflared
-chmod +x $PREFIX/bin/cloudflared
-
-echo -e "${YELLOW}[5/5]${NC} Instalando filebrowser..."
+echo -e "${YELLOW}[4/4]${NC} Instalando filebrowser..."
 curl -fsSL https://github.com/filebrowser/filebrowser/releases/latest/download/linux-arm64-filebrowser.tar.gz -o ~/fb.tar.gz
 tar -xzf ~/fb.tar.gz -C $PREFIX/bin/ filebrowser
 chmod +x $PREFIX/bin/filebrowser
@@ -57,8 +53,8 @@ if ! grep -q "termux-remote" ~/.bashrc 2>/dev/null; then
     echo 'alias remote="bash ~/termux-remote/start.sh start"' >> ~/.bashrc
     echo 'alias stopremote="bash ~/termux-remote/start.sh stop"' >> ~/.bashrc
     echo 'alias restartremote="bash ~/termux-remote/start.sh restart"' >> ~/.bashrc
-    echo 'alias tunnel="grep -o '"'"'[a-z0-9-]*\.trycloudflare\.com'"'"' ~/tunnel-terminal.log 2>/dev/null | tail -1"' >> ~/.bashrc
-    echo 'alias tunnelfiles="grep -o '"'"'[a-z0-9-]*\.trycloudflare\.com'"'"' ~/tunnel-files.log 2>/dev/null | tail -1"' >> ~/.bashrc
+    echo 'alias tunnel="grep -o '"'"'https://[^ ]*\.serveousercontent\.com'"'"' ~/tunnel-terminal.log 2>/dev/null | tail -1"' >> ~/.bashrc
+    echo 'alias tunnelfiles="grep -o '"'"'https://[^ ]*\.serveousercontent\.com'"'"' ~/tunnel-files.log 2>/dev/null | tail -1"' >> ~/.bashrc
 fi
 
 echo ""
