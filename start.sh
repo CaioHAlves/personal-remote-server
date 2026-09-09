@@ -36,7 +36,7 @@ fi
 # Matar processos anteriores
 stop_services() {
     pkill -f "ttyd -p 7681" 2>/dev/null || true
-    pkill -f "filebrowser -p 8080" 2>/dev/null || true
+    pkill -f "node.*simple-file-server" 2>/dev/null || true
     pkill -f "ssh.*serveo.net" 2>/dev/null || true
     sleep 1
 }
@@ -46,7 +46,7 @@ check_deps() {
     local ok=true
     command -v ttyd &> /dev/null || { print_error "ttyd nao encontrado. Rode: pkg install ttyd"; ok=false; }
     command -v ssh &> /dev/null || { print_error "ssh nao encontrado."; ok=false; }
-    command -v filebrowser &> /dev/null || { print_warn "filebrowser nao encontrado. Gerenciador de arquivos desabilitado."; }
+    command -v node &> /dev/null || { print_error "node nao encontrado. Rode: pkg install nodejs"; ok=false; }
     $ok || exit 1
 }
 
@@ -56,13 +56,14 @@ start_ttyd() {
     print_ok "ttyd rodando (porta 7681)"
 }
 
-# Iniciar filebrowser (arquivos)
-start_filebrowser() {
-    if command -v filebrowser &> /dev/null; then
-        nohup filebrowser -p 8080 -r ~ --noauth --address 127.0.0.1 > /dev/null 2>&1 &
-        print_ok "filebrowser rodando (porta 8080)"
+# Iniciar servidor de arquivos
+start_fileserver() {
+    if [ -f ~/simple-file-server.js ]; then
+        nohup node ~/simple-file-server.js > /dev/null 2>&1 &
+        print_ok "servidor de arquivos rodando (porta 8080)"
         HAS_FILES=true
     else
+        print_warn "simple-file-server.js nao encontrado. Gerenciador de arquivos desabilitado."
         HAS_FILES=false
     fi
 }
@@ -119,7 +120,7 @@ show_urls() {
 stop_all() {
     echo -e "\n${YELLOW}Parando todos os servicos...${NC}"
     pkill -f "ttyd -p 7681" 2>/dev/null || true
-    pkill -f "filebrowser -p 8080" 2>/dev/null || true
+    pkill -f "node.*simple-file-server" 2>/dev/null || true
     pkill -f "ssh.*serveo.net" 2>/dev/null || true
     print_ok "Todos os servicos parados."
 }
@@ -135,10 +136,10 @@ show_status() {
         echo -e "  ${RED}[PARADO]${NC}  ttyd"
     fi
 
-    if pgrep -f "filebrowser -p 8080" > /dev/null 2>&1; then
-        echo -e "  ${GREEN}[RODANDO]${NC} filebrowser (porta 8080)"
+    if pgrep -f "node.*simple-file-server" > /dev/null 2>&1; then
+        echo -e "  ${GREEN}[RODANDO]${NC} servidor de arquivos (porta 8080)"
     else
-        echo -e "  ${RED}[PARADO]${NC}  filebrowser"
+        echo -e "  ${RED}[PARADO]${NC}  servidor de arquivos"
     fi
 
     if pgrep -f "ssh.*serveo.net" > /dev/null 2>&1; then
@@ -165,7 +166,7 @@ case "${1:-start}" in
         check_deps
         echo ""
         start_ttyd
-        start_filebrowser
+        start_fileserver
         start_tunnels
         show_urls
         ;;
@@ -179,7 +180,7 @@ case "${1:-start}" in
         stop_services
         echo ""
         start_ttyd
-        start_filebrowser
+        start_fileserver
         start_tunnels
         show_urls
         ;;
