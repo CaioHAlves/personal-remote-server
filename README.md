@@ -1,19 +1,17 @@
 # :iphone: Termux Remote Access
 
-### Transforme seu celular Android num servidor acessivel de qualquer computador do mundo!
+### Acesse o terminal e os arquivos do seu celular Android de qualquer computador!
 
 ---
 
 ## :thinking: O que e isso?
 
-Imagine que voce tem um computador poderoso no seu celular Android. Esse projeto permite que voce **acesse esse computador de qualquer navegador web**, como se estivesse sentado na frente dele.
+Seu celular Android tem um terminal poderoso escondido. Esse projeto **desbloqueia** ele e permite que voce acesse de qualquer navegador web, como se estivesse sentado na frente dele.
 
 Voce pode:
 - :computer: Digitar comandos no terminal (igual um hacker dos filmes!)
 - :open_file_folder: Gerenciar arquivos (criar pastas, mover, editar, excluir)
 - :globe_with_meridians: Acessar de qualquer lugar do mundo
-
-**Nao precisa de root, nem de computador ligado, nem de nada complicado!**
 
 ---
 
@@ -31,81 +29,71 @@ Seu Celular (Termux)          Internet           Seu Computador
      porta 8080
 ```
 
-**Passo a passo:**
-
-1. :fire: O **ttyd** compartilha o terminal do celular via WebSocket
-2. :open_file_folder: O **filebrowser** mostra os arquivos numa interface bonita
-3. :shield: O **cloudflared** cria um tunel seguro entre o celular e a Cloudflare
-4. :star: A Cloudflare te da uma URL publica tipo `nome-cool.trycloudflare.com`
-5. :tada: Voce abre essa URL no navegador do computador e pronto!
-
 ---
 
-## :package: O que voce precisa
+## :rocket: Instalacao rapida
 
-| Item | Onde achar | Obrigatorio? |
-|------|-----------|:------------:|
-| :iphone: Celular com Android | Loja de aplicativos | Sim |
-| :package: Termux | [F-Droid](https://f-droid.org/pt-BR/packages/com.termux/) | Sim |
-| :electric_plug: Conexao com a internet | Qualquer WiFi ou dados | Sim |
-| :computer: Computador com navegador | Qualquer um | Sim |
+### 1. Instalar o Termux
 
----
+Baixe pelo [F-Droid](https://f-droid.org/pt-BR/packages/com.termux/) (NAO use o da Play Store).
 
-## :rocket: Instalacao (passo a passo)
+### 2. Rodar o install
 
-### Passo 1: Instalar o Termux
-
-Baixe o Termux pelo [F-Droid](https://f-droid.org/pt-BR/packages/com.termux/) (NAO use o da Play Store, ele e antigo e nao funciona).
-
-### Passo 2: Instalar as ferramentas
-
-Abra o Termux e cole esses comandos **um por um**:
+Abra o Termux e cole:
 
 ```bash
-# Atualizar tudo primeiro
 pkg update -y && pkg upgrade -y
-```
-
-```bash
-# Instalar as dependencias basicas
 pkg install -y nodejs proot curl git
-```
-
-```bash
-# Instalar o ttyd (terminal web)
 pkg install -y ttyd
-```
-
-```bash
-# Baixar o cloudflared (tunel da Cloudflare)
 curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o $PREFIX/bin/cloudflared
 chmod +x $PREFIX/bin/cloudflared
-```
-
-```bash
-# Baixar o filebrowser (gerenciador de arquivos)
 curl -fsSL https://github.com/filebrowser/filebrowser/releases/latest/download/linux-arm64-filebrowser.tar.gz -o /tmp/fb.tar.gz
 tar -xzf /tmp/fb.tar.gz -C $PREFIX/bin/ filebrowser
 chmod +x $PREFIX/bin/filebrowser
+git clone https://github.com/CaioHAlves/personal-remote-server.git ~/termux-remote
 ```
 
-### Passo 3: Baixar os arquivos do projeto
+### 3. Iniciar
 
 ```bash
-# Clonar o repositorio
-cd ~
-git clone https://github.com/CaioHAlves/personal-remote-server.git termux-remote
-cd termux-remote
+bash ~/termux-remote/start.sh
 ```
 
-### Passo 4: Iniciar
+O script vai mostrar **duas URLs**. Abra ambas no navegador do computador!
 
-```bash
-bash start.sh
+---
+
+## :bulb: COMO ACESSAR (passo a passo)
+
+Quando voce roda `bash start.sh`, o script mostra **duas URLs**:
+
+```
+  ═══════════════════════════════════════
+
+  Abra essas URLs no navegador do seu computador:
+
+  TERMINAL:
+  https://abc-xyz-123.trycloudflare.com
+
+  ARQUIVOS:
+  https://def-uvw-456.trycloudflare.com
+
+  ═══════════════════════════════════════
 ```
 
-**Pronto!** O script vai mostrar as URLs publicas. Copie e cole no navegador do computador!
+### Passo 1: Copie a URL do TERMINAL
+
+Cole no navegador. Voce vera o terminal do Termux. Pode digitar comandos normalmente!
+
+### Passo 2: Copie a URL dos ARQUIVOS
+
+Cole em outra aba do navegador. Voce vera os arquivos do celular numa interface bonita.
+
+### Passo 3: Pronto!
+
+Agora voce tem:
+- Uma aba com o **terminal** (para digitar comandos)
+- Outra aba com os **arquivos** (para gerenciar pastas e arquivos)
 
 ---
 
@@ -113,10 +101,10 @@ bash start.sh
 
 | Comando | O que faz |
 |---------|-----------|
-| `bash start.sh` | Inicia tudo e mostra as URLs |
-| `bash start.sh stop` | Para todos os servicos |
-| `bash start.sh restart` | Reinicia tudo |
-| `bash start.sh status` | Mostra servicos rodando |
+| `bash ~/termux-remote/start.sh` | Inicia tudo e mostra as URLs |
+| `bash ~/termux-remote/start.sh stop` | Para todos os servicos |
+| `bash ~/termux-remote/start.sh restart` | Reinicia tudo |
+| `bash ~/termux-remote/start.sh status` | Mostra servicos rodando |
 | `tunnel` | Mostra a URL atual do terminal |
 | `tunnelfiles` | Mostra a URL do gerenciador de arquivos |
 
@@ -140,11 +128,9 @@ termux-remote/
 ├── install.sh            # Script de instalacao automatica
 ├── README.md             # Este arquivo
 ├── .gitignore            # Arquivos ignorados pelo git
-│
-├── --- Arquivos auxiliares ---
-├── remote-server.js      # Servidor Node.js (proxy reverso)
-├── landing.js            # Pagina de inicio simples
-├── start-cloudflared.sh  # Script para iniciar cloudflared
+├── remote-server.js      # Servidor Node.js (proxy)
+├── landing.js            # Pagina de inicio
+├── start-cloudflared.sh  # Script para cloudflared
 ├── check-tunnel.sh       # Verifica status do tunnel
 ├── dns-forwarder.js      # Encaminhador DNS
 ├── tcp-tunnel.js         # Tunnel TCP (experimental)
@@ -158,15 +144,11 @@ termux-remote/
 
 ### :key: Adicionar senha no filebrowser
 
-Por padrao, o gerenciador de arquivos nao tem senha. Para adicionar:
-
 ```bash
 filebrowser -p 8080 -r ~ --username admin --password su_senha_aqui
 ```
 
 ### :repeat: Manter rodando depois de fechar o Termux
-
-O Termux pode fechar em background. Para evitar isso:
 
 1. Abra o Termux
 2. Digite `termux-wake-lock`
@@ -187,11 +169,10 @@ tunnelfiles # URL dos arquivos
 
 | Problema | Solucao |
 |----------|---------|
-| "conexao recusada" | Verifique se o script esta rodando com `bash start.sh status` |
+| "conexao recusada" | Rode `bash ~/termux-remote/start.sh status` para verificar |
 | Terminal nao digita | Recarregue a pagina (F5) |
 | URL nao abre | Verifique a conexao com a internet |
 | Script nao roda | Execute `pkg update -y` e tente de novo |
-| cloudflared nao inicia | Verifique se esta instalado: `cloudflared --version` |
 
 ---
 
@@ -200,28 +181,19 @@ tunnelfiles # URL dos arquivos
 - :warning: O filebrowser **nao tem senha** por padrao. Adicione uma!
 - :warning: O terminal da acesso total ao celular. Nao compartilhe as URLs!
 - :lock: As conexoes sao criptografadas pela Cloudflare
-- :iphone: Rode isso apenas no seu celular pessoal
 
 ---
 
-## :test_tube: O que foi testado e funcionou
+## :test_tube: O que funciona e o que nao
 
-| Ferramenta | Funcionou? | Notas |
-|-----------|:----------:|-------|
+| Ferramenta | Funcionou? | Motivo |
+|-----------|:----------:|--------|
 | ttyd | :white_check_mark: | Terminal web perfeito |
 | filebrowser | :white_check_mark: | Gerenciador de arquivos funcional |
 | cloudflared | :white_check_mark: | Tuneis gratuitos sem conta |
-| Node.js proxy | :x: | WebSocket com problemas via cloudflare |
-
-## :x: O que NAO funcionou
-
-| Ferramenta | Motivo |
-|-----------|--------|
-| ngrok | Versao gratuita nao suporta TCP |
-| bore | Servidor bore.pub inacessivel |
-| code-server | Nao funciona no Android (dependencias nativas) |
-| serveo.net | Nao suporta encaminhamento de portas |
-| localhost.run | Apenas HTTP, nao TCP |
+| ngrok | :x: | Versao gratuita nao suporta TCP |
+| bore | :x: | Servidor inacessivel |
+| code-server | :x: | Nao funciona no Android |
 
 ---
 
