@@ -69,11 +69,11 @@ start_filebrowser() {
 
 # Iniciar tunnels
 start_tunnels() {
-    nohup cloudflared tunnel --url http://localhost:7681 > /tmp/tunnel-terminal.log 2>&1 &
+    nohup cloudflared tunnel --url http://localhost:7681 > ~/tunnel-terminal.log 2>&1 &
     print_ok "tunnel do terminal criado"
 
     if [ "$HAS_FILES" = true ]; then
-        nohup cloudflared tunnel --url http://localhost:8080 > /tmp/tunnel-files.log 2>&1 &
+        nohup cloudflared tunnel --url http://localhost:8080 > ~/tunnel-files.log 2>&1 &
         print_ok "tunnel dos arquivos criado"
     fi
 }
@@ -82,10 +82,10 @@ start_tunnels() {
 show_urls() {
     sleep 8
 
-    TERMINAL_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" /tmp/tunnel-terminal.log 2>/dev/null | tail -1)
+    TERMINAL_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" ~/tunnel-terminal.log 2>/dev/null | tail -1)
     FILES_URL=""
     if [ "$HAS_FILES" = true ]; then
-        FILES_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" /tmp/tunnel-files.log 2>/dev/null | tail -1)
+        FILES_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" ~/tunnel-files.log 2>/dev/null | tail -1)
     fi
 
     echo ""
@@ -149,8 +149,8 @@ show_status() {
 
     echo ""
 
-    TERMINAL_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" /tmp/tunnel-terminal.log 2>/dev/null | tail -1)
-    FILES_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" /tmp/tunnel-files.log 2>/dev/null | tail -1)
+    TERMINAL_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" ~/tunnel-terminal.log 2>/dev/null | tail -1)
+    FILES_URL=$(grep -o "[a-z0-9-]*\.trycloudflare\.com" ~/tunnel-files.log 2>/dev/null | tail -1)
 
     [ -n "$TERMINAL_URL" ] && echo -e "  Terminal:  ${YELLOW}https://$TERMINAL_URL${NC}"
     [ -n "$FILES_URL" ] && echo -e "  Arquivos:  ${YELLOW}https://$FILES_URL${NC}"

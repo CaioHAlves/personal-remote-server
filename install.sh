@@ -39,10 +39,10 @@ curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cl
 chmod +x $PREFIX/bin/cloudflared
 
 echo -e "${YELLOW}[5/5]${NC} Instalando filebrowser..."
-curl -fsSL https://github.com/filebrowser/filebrowser/releases/latest/download/linux-arm64-filebrowser.tar.gz -o /tmp/fb.tar.gz
-tar -xzf /tmp/fb.tar.gz -C $PREFIX/bin/ filebrowser
+curl -fsSL https://github.com/filebrowser/filebrowser/releases/latest/download/linux-arm64-filebrowser.tar.gz -o ~/fb.tar.gz
+tar -xzf ~/fb.tar.gz -C $PREFIX/bin/ filebrowser
 chmod +x $PREFIX/bin/filebrowser
-rm -f /tmp/fb.tar.gz
+rm -f ~/fb.tar.gz
 
 # Baixar script de inicio
 echo -e "\n${YELLOW}Baixando script de inicio...${NC}"
@@ -57,8 +57,8 @@ if ! grep -q "termux-remote" ~/.bashrc 2>/dev/null; then
     echo 'alias remote="bash ~/termux-remote/start.sh start"' >> ~/.bashrc
     echo 'alias stopremote="bash ~/termux-remote/start.sh stop"' >> ~/.bashrc
     echo 'alias restartremote="bash ~/termux-remote/start.sh restart"' >> ~/.bashrc
-    echo 'alias tunnel="grep -o '"'"'[a-z0-9-]*\.trycloudflare\.com'"'"' /tmp/tunnel-terminal.log 2>/dev/null | tail -1"' >> ~/.bashrc
-    echo 'alias tunnelfiles="grep -o '"'"'[a-z0-9-]*\.trycloudflare\.com'"'"' /tmp/tunnel-files.log 2>/dev/null | tail -1"' >> ~/.bashrc
+    echo 'alias tunnel="grep -o '"'"'[a-z0-9-]*\.trycloudflare\.com'"'"' ~/tunnel-terminal.log 2>/dev/null | tail -1"' >> ~/.bashrc
+    echo 'alias tunnelfiles="grep -o '"'"'[a-z0-9-]*\.trycloudflare\.com'"'"' ~/tunnel-files.log 2>/dev/null | tail -1"' >> ~/.bashrc
 fi
 
 echo ""

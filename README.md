@@ -47,8 +47,8 @@ pkg install -y nodejs proot curl git
 pkg install -y ttyd
 curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o $PREFIX/bin/cloudflared
 chmod +x $PREFIX/bin/cloudflared
-curl -fsSL https://github.com/filebrowser/filebrowser/releases/latest/download/linux-arm64-filebrowser.tar.gz -o /tmp/fb.tar.gz
-tar -xzf /tmp/fb.tar.gz -C $PREFIX/bin/ filebrowser
+curl -fsSL https://github.com/filebrowser/filebrowser/releases/latest/download/linux-arm64-filebrowser.tar.gz -o ~/fb.tar.gz
+tar -xzf ~/fb.tar.gz -C $PREFIX/bin/ filebrowser
 chmod +x $PREFIX/bin/filebrowser
 git clone https://github.com/CaioHAlves/personal-remote-server.git ~/termux-remote
 ```
