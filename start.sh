@@ -7,6 +7,25 @@
 
 set -e
 
+# ============================================
+#   Configuracao
+# ============================================
+# Senha do servidor de arquivos (deixe vazio para desabilitar auth)
+FILE_SERVER_PASS="${FILE_SERVER_PASS:-}"
+
+# Se no tiver senha configurada, pedir ao usuario
+if [ -z "$FILE_SERVER_PASS" ] && [ -t 0 ]; then
+    echo -e "\n  \033[0;36mDefina uma senha para o servidor de arquivos:\033[0m"
+    read -s -p "  Senha (Enter p/ sem senha): " FILE_SERVER_PASS
+    echo ""
+    if [ -n "$FILE_SERVER_PASS" ]; then
+        echo -e "  \033[0;32mSenha definida!\033[0m"
+    else
+        echo -e "  \033[1;33m[!] Servidor sem senha - qualquer pessoa pode acessar!\033[0m"
+    fi
+fi
+export FILE_SERVER_PASS
+
 # Cores para o terminal
 RED='\033[0;31m'
 GREEN='\033[0;32m'
