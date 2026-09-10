@@ -43,7 +43,7 @@ rm -f ~/fb.tar.gz
 # Baixar script de inicio
 echo -e "\n${YELLOW}Baixando script de inicio...${NC}"
 mkdir -p ~/termux-remote
-curl -fsSL https://raw.githubusercontent.com/CaioHAlves/termux-remote/main/start.sh -o ~/termux-remote/start.sh
+curl -fsSL https://raw.githubusercontent.com/CaioHAlves/personal-remote-server/main/start.sh -o ~/termux-remote/start.sh
 chmod +x ~/termux-remote/start.sh
 
 # Adicionar aliases ao .bashrc
