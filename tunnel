@@ -1,0 +1,29 @@
+#!/data/data/com.termux/usr/bin/bash
+# Mostra as URLs atuais
+
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+echo ""
+echo -e "${CYAN}═══════════════════════════════════════════${NC}"
+echo -e "${GREEN}  URLs ATUAIS:${NC}"
+echo -e "${CYAN}═══════════════════════════════════════════${NC}"
+
+BASE_URL=$(grep -o 'https://[^ ]*\.lhr\.life' ~/tunnel.log 2>/dev/null | tail -1)
+
+if [ -n "$BASE_URL" ]; then
+    echo -e "\n  ${GREEN}Gerenciador de Arquivos:${NC}"
+    echo -e "  ${YELLOW}$BASE_URL/${NC}"
+    echo -e "\n  ${GREEN}Terminal Web:${NC}"
+    echo -e "  ${YELLOW}$BASE_URL/terminal${NC}"
+else
+    echo -e "\n  ${RED}Tunnel offline${NC}"
+    echo -e "  Execute: bash ~/start.sh"
+fi
+
+echo ""
+echo -e "${CYAN}═══════════════════════════════════════════${NC}"
+echo ""

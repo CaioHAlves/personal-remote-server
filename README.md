@@ -1,38 +1,43 @@
-# :iphone: Termux Remote Access
+# Termux Remote Access
 
 ### Transforme seu celular Android num servidor acessivel de qualquer computador do mundo!
 
 ---
 
-## :thinking: O que e isso?
+## O que e isso?
 
 Imagine que voce tem um computador poderoso no seu celular Android. Esse projeto permite que voce **acesse esse computador de qualquer navegador web**, como se estivesse sentado na frente dele.
 
 Voce pode:
-- :computer: Digitar comandos no terminal (igual um hacker dos filmes!)
-- :open_file_folder: Gerenciar arquivos (criar pastas, mover, editar, excluir)
-- :globe_with_meridians: Acessar de qualquer lugar do mundo
+- Digitar comandos no terminal (igual um hacker dos filmes!)
+- Gerenciar arquivos (criar pastas, mover, editar, excluir)
+- Acessar de qualquer lugar do mundo
 
 **Nao precisa de root, nem de computador ligado, nem de nada complicado!**
 
 ---
 
-## :sparkles: Funcionalidades
+## Funcionalidades
 
-### Gerenciador de Arquivos (Simple File Server)
+### Gerenciador de Arquivos
 
 | Funcionalidade | Descricao |
 |----------------|-----------|
-| :art: **3 Modos de Visualizacao** | Lista, Grade ou Icones Pequenos |
-| :globe_with_meridians: **Upload** | Arraste arquivos ou clique para enviar |
-| :arrow_down: **Download** | Baixe arquivos individuais ou em lote (ZIP) |
-| :pencil2: **Edicao** | Edite arquivos de texto direto no navegador |
-| :warning: **Renomear** | Renomeie arquivos e pastas com um clique |
-| :wastebasket: **Excluir** | Delete arquivos com confirmacao de seguranca |
-| :closed_lock_with_key: **Senha** | Protegido por senha (configuravel) |
-| :iphone: **Info do Sistema** | Mostra armazenamento, bateria e RAM |
-| :battery: **Storage Bar** | Barra de progresso do armazenamento |
-| :battery: **Memoria** | Uso de RAM em tempo real |
+| **3 Modos de Visualizacao** | Lista, Grade ou Icones Pequenos |
+| **Upload** | Arraste arquivos ou clique para enviar |
+| **Download** | Baixe arquivos individuais ou em lote (ZIP) |
+| **Edicao** | Edite arquivos de texto direto no navegador |
+| **Renomear** | Renomeie arquivos e pastas com um clique |
+| **Excluir** | Delete arquivos com confirmacao de seguranca |
+| **Criar Pasta** | Crie novas pastas direto no navegador |
+| **Senha** | Protegido por senha (configuravel) |
+| **Info do Sistema** | Mostra armazenamento, bateria e RAM |
+
+### Terminal Web
+
+- Terminal completo via navegador
+- Suporte a WebSocket para interacao em tempo real
+- Acesso via `/terminal` na mesma URL
 
 ### Visualizacoes
 
@@ -44,42 +49,49 @@ Voce pode:
 
 ---
 
-## :thinking: Como funciona?
+## Como funciona?
 
 ```
 Seu Celular (Termux)          Internet           Seu Computador
 +-------------------+    +----------------+    +-------------------+
 |                   |    |                |    |                   |
-|  terminal (bash)  |--->|   Cloudflare   |--->|  Navegador Web    |
-|  arquivos         |    |   (tunel)      |    |  (Chrome, etc)    |
+|  ttyd (terminal)  |--->|  localhost.run  |--->|  Navegador Web    |
+|  file server      |    |   (tunel SSH)  |    |  (Chrome, etc)    |
+|  reverse proxy    |    |                |    |                   |
 |                   |    |                |    |                   |
 +-------------------+    +----------------+    +-------------------+
      porta 7681              URL publica          voce digita aqui!
-     porta 8080
+     porta 8080              (lhr.life)
+     porta 9090
 ```
 
 **Passo a passo:**
 
-1. :fire: O **ttyd** compartilha o terminal do celular via WebSocket
-2. :open_file_folder: O **filebrowser** mostra os arquivos numa interface bonita
-3. :shield: O **cloudflared** cria um tunel seguro entre o celular e a Cloudflare
-4. :star: A Cloudflare te da uma URL publica tipo `nome-cool.trycloudflare.com`
-5. :tada: Voce abre essa URL no navegador do computador e pronto!
+1. O **ttyd** compartilha o terminal do celular via WebSocket
+2. O **simple-file-server** mostra os arquivos numa interface bonita
+3. O **reverse-proxy** combina terminal e arquivos numa unica porta
+4. O **localhost.run** cria um tunel SSH gratuito e estavel
+5. Voce recebe uma URL tipo `abc.lhr.life` que funciona enquanto o celular estiver ligado
+6. Voce abre essa URL no navegador do computador e pronto!
+
+**URLs:**
+- Arquivos: `https://URL/`
+- Terminal: `https://URL/terminal`
 
 ---
 
-## :package: O que voce precisa
+## O que voce precisa
 
 | Item | Onde achar | Obrigatorio? |
 |------|-----------|:------------:|
-| :iphone: Celular com Android | Loja de aplicativos | Sim |
-| :package: Termux | [F-Droid](https://f-droid.org/pt-BR/packages/com.termux/) | Sim |
-| :electric_plug: Conexao com a internet | Qualquer WiFi ou dados | Sim |
-| :computer: Computador com navegador | Qualquer um | Sim |
+| Celular com Android | Loja de aplicativos | Sim |
+| Termux | [F-Droid](https://f-droid.org/pt-BR/packages/com.termux/) | Sim |
+| Conexao com a internet | Qualquer WiFi ou dados | Sim |
+| Computador com navegador | Qualquer um | Sim |
 
 ---
 
-## :rocket: Instalacao (passo a passo)
+## Instalacao (passo a passo)
 
 ### Passo 1: Instalar o Termux
 
@@ -96,59 +108,53 @@ pkg update -y && pkg upgrade -y
 
 ```bash
 # Instalar as dependencias basicas
-pkg install -y nodejs proot curl git zip
-```
-
-```bash
-# Instalar o ttyd (terminal web)
-pkg install -y ttyd
-```
-
-```bash
-# Baixar o cloudflared (tunel da Cloudflare)
-curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64 -o $PREFIX/bin/cloudflared
-chmod +x $PREFIX/bin/cloudflared
+pkg install -y nodejs ttyd ssh curl git zip
 ```
 
 ### Passo 3: Baixar os arquivos do projeto
 
 ```bash
-# Criar a pasta do projeto
-mkdir -p ~/termux-remote
-cd ~/termux-remote
+# Clonar o repositorio
+git clone https://github.com/CaioHAlves/personal-remote-server.git
+cd personal-remote-server
 ```
 
-Copie os arquivos `start.sh` e `simple-file-server.js` para a pasta `~/termux-remote`.
+Ou baixe os arquivos manualmente:
+- `simple-file-server.js`
+- `reverse-proxy.js`
+- `start.sh`
 
 ### Passo 4: Dar permissao e rodar
 
 ```bash
-chmod +x ~/termux-remote/start.sh
-bash ~/termux-remote/start.sh
+chmod +x start.sh
+bash start.sh
 ```
 
 **Pronto!** O script vai:
 1. Pedir uma senha para o gerenciador de arquivos
-2. Iniciar os servicos
-3. Mostrar as URLs publicas
+2. Iniciar todos os servicos (ttyd, file server, reverse proxy)
+3. Criar o tunel com localhost.run
+4. Mostrar as URLs publicas
 
 Copie e cole no navegador do computador!
 
 ---
 
-## :wrench: Comandos uteis
+## Comandos uteis
 
 | Comando | O que faz |
 |---------|-----------|
-| `bash ~/termux-remote/start.sh` | Inicia tudo e mostra as URLs |
-| `bash ~/termux-remote/start.sh stop` | Para todos os servicos |
-| `bash ~/termux-remote/start.sh restart` | Reinicia tudo |
-| `bash ~/termux-remote/start.sh status` | Mostra status dos servicos |
-| `tunnel` | Mostra a URL atual do terminal |
+| `bash ~/start.sh` | Inicia tudo e mostra as URLs |
+| `bash ~/start.sh stop` | Para todos os servicos |
+| `bash ~/start.sh restart` | Reinicia tudo |
+| `bash ~/start.sh status` | Mostra status e URLs atuais |
+| `tunnel` | Mostra as URLs atuais |
+| `stopremote` | Para todos os servicos rapidamente |
 
 ---
 
-## :gear: Configuracao
+## Configuracao
 
 ### Senha do Servidor
 
@@ -156,7 +162,13 @@ Ao iniciar, o script pede uma senha. Para definir via variavel de ambiente:
 
 ```bash
 export FILE_SERVER_PASS="minha_senha"
-bash ~/termux-remote/start.sh
+bash ~/start.sh
+```
+
+Ou na mesma linha:
+
+```bash
+FILE_SERVER_PASS=minha123 bash ~/start.sh
 ```
 
 ### Portas
@@ -165,18 +177,12 @@ bash ~/termux-remote/start.sh
 |---------|:-----:|---------|
 | ttyd | 7681 | Terminal web |
 | file server | 8080 | Gerenciador de arquivos |
-| SSH | 8022 | Acesso SSH tradicional |
-
-### Mudar a porta do servidor de arquivos
-
-```bash
-export FILE_SERVER_PORT=9090
-bash ~/termux-remote/start.sh
-```
+| reverse proxy | 9090 | Combina tudo (terminal + arquivos) |
+| localhost.run | SSH | Tuneis para internet |
 
 ---
 
-## :bulb: Dicas
+## Dicas
 
 ### Manter rodando depois de fechar o Termux
 
@@ -188,42 +194,62 @@ O Termux pode fechar em background. Para evitar isso:
 
 ### URLs mudaram?
 
-Sim! A cada reinicio, a Cloudflare gera URLs novas. Para ver a URL atual:
+Sim! A cada reinicio, o localhost.run gera URLs novas. Para ver a URL atual:
 
 ```bash
-tunnel    # URL do terminal
+tunnel
 ```
 
 ### Gerenciador de arquivos sem senha
 
-Se preferir sem autenticacao, deixe vazio quando o script pedir a senha.
+Se preferir sem autenticacao, aperte Enter quando o script pedir a senha.
 
 ---
 
-## :bug: Problemas comuns
+## Arquitetura
+
+```
++-----------------+
+|   ttyd :7681    |---+
++-----------------+   |
+                      |   +------------------+
++-----------------+   +-->| reverse-proxy    |--> localhost.run --> Internet
+| file-server:8080|---+   |    :9090         |
++-----------------+       +------------------+
+```
+
+O **reverse-proxy.js** e responsavel por:
+- Rota `/terminal` e `/terminal/*` -> encaminha para o ttyd (incluindo WebSocket)
+- Todas as outras rotas -> encaminha para o file server
+- Gerencia conexoes WebSocket para o terminal funcionar corretamente
+
+---
+
+## Problemas comuns
 
 | Problema | Solucao |
 |----------|---------|
 | "conexao recusada" | Verifique se o script esta rodando |
-| Terminal nao digita | Recarregue a pagina (F5) |
+| Terminal pagina preta | O reverse proxy precisa estar ativo; reinicie com `bash ~/start.sh restart` |
 | URL nao abre | Verifique a conexao com a internet |
 | Script nao roda | Execute `pkg update -y` e tente de novo |
 | Upload nao funciona | Verifique se o arquivo nao e muito grande (>100MB) |
 | Senha esquecida | Reinicie o script e defina uma nova senha |
+| Terminal nao responde | Recarregue a pagina (F5) |
 
 ---
 
-## :shield: Seguranca
+## Seguranca
 
-- :lock: Senha obrigatoria por padrao
-- :warning: O terminal da acesso total ao celular. Nao compartilhe as URLs!
-- :lock: As conexoes sao criptografadas pela Cloudflare
-- :iphone: Rode isso apenas no seu celular pessoal
-- :key: Sessoes expiram apos 24 horas
+- Senha obrigatoria por padrao
+- O terminal da acesso total ao celular. Nao compartilhe as URLs!
+- Conexoes criptografadas via SSH (localhost.run)
+- Rode isso apenas no seu celular pessoal
+- Sessoes expiram apos 24 horas
 
 ---
 
-## :page_facing_up: API Endpoints
+## API Endpoints
 
 | Endpoint | Metodo | Descricao |
 |----------|--------|-----------|
@@ -238,17 +264,16 @@ Se preferir sem autenticacao, deixe vazio quando o script pedir a senha.
 
 ---
 
-## :heart: Creditos
+## Creditos
 
 - [ttyd](https://github.com/nicm/ttyd) - Terminal compartilhado via web
-- [filebrowser](https://github.com/filebrowser/filebrowser) - Gerenciador de arquivos
-- [cloudflared](https://github.com/cloudflare/cloudflared) - Tuneis da Cloudflare
+- [localhost.run](https://localhost.run/) - Tuneis SSH gratuitos e estaveis
 - [Termux](https://termux.dev/) - O terminal para Android
 
 ---
 
-Feito com :heart: por [CaioHAlves](https://github.com/CaioHAlves)
+Feito por [CaioHAlves](https://github.com/CaioHAlves)
 
-## :page_facing_up: Licenca
+## Licenca
 
-MIT - Faca o que quiser! :tada:
+MIT

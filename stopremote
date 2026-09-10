@@ -1,0 +1,9 @@
+#!/data/data/com.termux/usr/bin/bash
+# Para todos os servicos do termux-remote
+
+echo "Parando todos os servicos..."
+pkill -f "ttyd -p 7681" 2>/dev/null
+pkill -f "node.*simple-file-server" 2>/dev/null
+pkill -f "ssh.*localhost.run" 2>/dev/null
+pkill -f "ssh.*serveo.net" 2>/dev/null
+echo "Pronto!"
